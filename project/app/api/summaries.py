@@ -21,7 +21,7 @@ async def create_summary(payload: SummaryPayloadSchema) -> SummaryResponseSchema
     return response_object
 
 
-@router.get("/{id}/", response_model=SummarySchema)
+@router.get("/{summary_id}/", response_model=SummarySchema)
 async def read_summary(summary_id: int) -> SummarySchema:
     summary = await crud.get(summary_id)
     if not summary:
