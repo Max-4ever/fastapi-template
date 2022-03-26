@@ -15,9 +15,10 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@web-db:5432/web_dev
       - DATABASE_TEST_URL=postgres://postgres:postgres@web-db:5432/web_test
     depends_on:
-      - web-db
+      - db
+      - redis
 
-  web-db:
+  db:
     build:
       context: ./project/db
       dockerfile: Dockerfile
@@ -26,3 +27,8 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
