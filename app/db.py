@@ -8,7 +8,7 @@ from tortoise.contrib.fastapi import register_tortoise
 log = logging.getLogger("uvicorn")
 
 
-TORTOISE_ORM = {
+TORTOISE_ORM = {  # noqa: WPS407
     "connections": {"default": os.environ.get("DATABASE_URL")},
     "apps": {
         "models": {
@@ -20,9 +20,12 @@ TORTOISE_ORM = {
 
 
 def init_db(app: FastAPI) -> None:
+    db_url = os.environ.get("DATABASE_URL")
+    log.info("Connecting to db {db_url}...".format(db_url=db_url))
+
     register_tortoise(
         app,
-        db_url=os.environ.get("DATABASE_URL"),
+        db_url=db_url,
         modules={"models": ["app.models.tortoise"]},
         generate_schemas=False,
         add_exception_handlers=True,

@@ -21,5 +21,4 @@ async def get(summary_id: int) -> Union[dict, None]:
 
 
 async def get_all() -> List:
-    summaries = await TextSummary.all().values()
-    return summaries
+    return await TextSummary.all().values()

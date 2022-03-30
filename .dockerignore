@@ -4,5 +4,6 @@
 Dockerfile
 README.md
 docker-compose.yml
+.coverage*
 **/venv
 **/env

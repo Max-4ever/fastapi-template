@@ -1,32 +1,43 @@
 version: '3.8'
 
+# https://stackoverflow.com/questions/69230525/why-does-poetry-build-raise-moduleorpackagenotfound-exception
+# https://github.com/python-poetry/poetry/issues/512
+
 services:
 
   web:
-    build: ./project
+    build:
+      context: ./
+      dockerfile: compose/fastapi/Dockerfile
     command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
     volumes:
-      - ./project:/usr/src/app
+      - ./app:/usr/src/app
     ports:
       - 8004:8000
     environment:
       - ENVIRONMENT=dev
       - TESTING=0
-      - DATABASE_URL=postgres://postgres:postgres@web-db:5432/web_dev
-      - DATABASE_TEST_URL=postgres://postgres:postgres@web-db:5432/web_test
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/web_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@db:5432/web_test
     depends_on:
       - db
       - redis
 
   db:
+    restart: always
     build:
-      context: ./project/db
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: ./compose/db/Dockerfile
     expose:
       - 5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:6-alpine
